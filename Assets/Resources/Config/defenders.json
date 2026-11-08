@@ -1,0 +1,24 @@
+{
+    "EnemyMaxHealth": 100,
+    "Sentry": {
+        "Health": 100,
+        "Damage": 20,
+        "FireInterval": 1.0,
+        "Range": 9.0,
+        "BlastRadius": 0
+    },
+    "Barricade": {
+        "Health": 400,
+        "Damage": 0,
+        "FireInterval": 0.0,
+        "Range": 0.0,
+        "BlastRadius": 0
+    },
+    "Bomb": {
+        "Health": 1,
+        "Damage": 500,
+        "FireInterval": 0.0,
+        "Range": 0.0,
+        "BlastRadius": 1
+    }
+}

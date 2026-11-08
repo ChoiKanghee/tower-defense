@@ -1,12 +1,12 @@
 # Story 002: Ba đơn vị phòng thủ
 
 > **Epic**: TowerDefense
-> **Status**: Ready
+> **Status**: Complete
 > **Layer**: Core
 > **Type**: Logic
 > **Estimate**: L
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-11-08
 
 ## Context
 
@@ -42,7 +42,10 @@
 ## Implementation Notes
 
 - **Thứ tự làm (theo Build order):** làm tự vệ trước, cùng lính bộ binh ở story 003, và chơi thử xem lõi có vui không; sau đó mới thêm chiến lũy và bom ba càng
-- Cách bom ba càng kích nổ (tự nổ khi địch vào ô, hay người chơi bấm) brief chưa nói rõ. Mặc định: tự nổ khi có địch vào ô của nó hoặc ô kề; ghi lại quyết định khi làm
+- **Quyết định (2026-11-08, người dùng chốt):** bom ba càng **tự nổ**, người chơi không bấm kích nổ. Vùng là **3×3 ô quanh bom** (ô của bom và 8 ô xung quanh, gồm cả làn trên và làn dưới):
+  - Kích nổ: khi có địch bước vào bất kỳ ô nào trong vùng 3×3
+  - Sát thương: mọi địch đang ở trong vùng 3×3 lúc nổ đều trúng, rồi bom biến mất
+  - Bán kính lấy từ config (bán kính 1 = 3×3), ô ngoài lưới ở mép bị bỏ qua
 - Giá trị gameplay nằm ngoài code (ScriptableObject hoặc file dữ liệu), theo coding standard
 - Logic tách khỏi MonoBehaviour để test Edit Mode; public API có doc comment
 - Hình đại diện tạm là đủ
@@ -62,12 +65,14 @@
 
 ## Files
 
+- `Assets/Resources/Config/defenders.json`
 - `Assets/Scripts/Defenders/DefenderStats.cs`
 - `Assets/Scripts/Defenders/Defender.cs`
 - `Assets/Scripts/Defenders/DefenderPlacement.cs`
-- `Assets/Tests/EditMode/Defenders/DefenderTests.cs`
-
----
+- `Assets/Scripts/Defenders/DefenderBehaviour.cs`
+- `Assets/Scripts/Enemies/EnemyHealth.cs`
+- `Assets/Scripts/Enemies/LaneWalkerBehaviour.cs`
+- `Assets/Scripts/Demo/LaneDemoBootstrap.cs`
 
 ## QA Test Cases
 
@@ -92,3 +97,12 @@
 
 - Depends on: `production/epics/towerdefense/story-001-lane-grid-and-enemy-walk.md`
 - Unlocks: `production/epics/towerdefense/story-003-enemy-types.md`, `production/epics/towerdefense/story-004-supply-and-costs.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-11-08
+**Criteria**: 8/8 passing. Untested criteria: AC-7 passed on the user's confirmation only (no recorded run; `defenders.json` is unchanged in the evidence stamp)
+**Deviations**: ADVISORY — evidence images 01–07 are crops of the game window captured by screen control during play, not `ScreenCapture` output (placement needs mouse input). `EnemyMaxHealth` sits in `defenders.json` until story 003 moves it to per-enemy config. Demo-only extras in `LaneDemoBootstrap.cs`: right-click debug damage (50), 3 s spawn interval, colours, and on-screen strings hardcoded (throwaway demo). unity-specialist NITs: sentry cooldown discards leftover dt (fire rate frame-rate dependent); sentry fires at enemies at the off-grid spawn X; a damaged bomb is removed without exploding (debug path only); `DefenderStats.Get` default case returns Bomb; `Resources.Load` (superseded by Addressables, same as story 001); runtime IMGUI debug panel; runtime sprite never destroyed; no `.asmdef`, so Edit Mode tests cannot reference game code yet. OUT OF SCOPE — `ProjectSettings/UnityConnectSettings.asset` still uncommitted from story 001; `.vscode/` untracked
+**Test Evidence**: waived at qa.level minimal. Run result: OBSERVED — `production/qa/evidence/story-002-defender-units/` (01 tu ve firing, 02 bomb 3x3 blast, 03 same-lane shots, 04 occupied cell rejected, 05–07 chien luy damaged, broken, cell reused)
+**Reviewed by**: self, no independent review (solo mode; unity-specialist ran a static API check during /dev-story)
